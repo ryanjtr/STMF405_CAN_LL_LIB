@@ -61,8 +61,8 @@ all: main-build
 main-build: STM32F405_CAN_LL_.elf secondary-outputs
 
 # Tool invocations
-STM32F405_CAN_LL_.elf STM32F405_CAN_LL_.map: $(OBJS) $(USER_OBJS) F:\STM32project\STM32F103C8T6\CODE\STM32F405_CAN_LL_\STM32F405RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32F405_CAN_LL_.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"F:\STM32project\STM32F103C8T6\CODE\STM32F405_CAN_LL_\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F405_CAN_LL_.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM32F405_CAN_LL_.elf STM32F405_CAN_LL_.map: $(OBJS) $(USER_OBJS) F:\STM32project\STM32F103C8T6\CODE\STMF405_CAN_LL_LIB\STM32F405RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32F405_CAN_LL_.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"F:\STM32project\STM32F103C8T6\CODE\STMF405_CAN_LL_LIB\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F405_CAN_LL_.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

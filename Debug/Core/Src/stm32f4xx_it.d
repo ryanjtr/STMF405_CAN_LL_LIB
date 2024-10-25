@@ -35,7 +35,7 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h \
  ../Core/Inc/stm32f4xx_it.h \
- F:/STM32project/STM32F103C8T6/CODE/STM32F405_CAN_LL_/can_ll_lib/stm32f4_can_ll.h
+ F:/STM32project/STM32F103C8T6/CODE/STMF405_CAN_LL_LIB/can_ll_lib/stm32f4_can_ll.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -73,4 +73,4 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h:
 ../Core/Inc/stm32f4xx_it.h:
-F:/STM32project/STM32F103C8T6/CODE/STM32F405_CAN_LL_/can_ll_lib/stm32f4_can_ll.h:
+F:/STM32project/STM32F103C8T6/CODE/STMF405_CAN_LL_LIB/can_ll_lib/stm32f4_can_ll.h:

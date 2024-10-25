@@ -128,10 +128,6 @@ int main(void)
   LL_CAN_ActivateInterrupt(&hcan1, _CAN_IT_RX_FIFO0_MSG_PENDING_Pos | _CAN_IT_TX_MAILBOX_EMPTY_Pos);
 
   // Set flag to
-  hcan1.Init.Prescaler = 2;
-  hcan1.Init.SyncJumpWidth = _CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = _CAN_BS1_10TQ;
-  hcan1.Init.TimeSeg2 = _CAN_BS2_1TQ;
   hcan1.Init.Mode = _NORMAL_MODE;
   hcan1.Init.status.AutoBusOff = DISABLE;
   hcan1.Init.status.AutoRetransmission = ENABLE;

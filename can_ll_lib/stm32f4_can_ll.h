@@ -14,6 +14,8 @@
 #include "stm32f4xx.h"
 /*---------------------------------*/
 
+
+/*---------------------------------*/
 /*Controller Area Network TxMailBox*/
 typedef struct
 {
@@ -495,6 +497,14 @@ typedef struct
 #define LL_CAN_ERROR_NOT_READY (0x00080000U)       /*!< Peripheral not ready                                 */
 #define LL_CAN_ERROR_NOT_STARTED (0x00100000U)     /*!< Peripheral not started                               */
 #define LL_CAN_ERROR_PARAM (0x00200000U)           /*!< Parameter error                                      */
+
+
+/**---------------------------------APB1 clock for bit rate calculation---------------------------------**/
+
+#define APB1_4MHZ 	4000000
+#define APB1_8MHZ 	8000000
+#define APB1_12MHZ 	12000000
+#define APB1_24MHZ	24000000
 
 /**---------------------------------Prototype functions-------------------------------------------------**/
 

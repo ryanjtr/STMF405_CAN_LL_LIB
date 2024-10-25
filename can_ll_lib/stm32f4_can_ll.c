@@ -16,7 +16,7 @@ CAN_TypeDef_t *canbase;
 
 // Static prototypes
 static void Trans(CAN_TypeDef_t *canbase, const uint8_t data[], LL_CAN_TxHeaderTypeDef_t *htxheader, uint32_t *TxMailBox);
-
+static uint32_t Calculate_APB1_clk();
 /**
  * The function `LL_CAN_GPIO_Init` initializes GPIO pins for CAN communication based on the specified
  * CAN type.
@@ -96,10 +96,10 @@ ErrorStatus LL_CAN_Init(LL_CAN_Handler_t *hcan)
 	ErrorStatus status = ERROR;
 	uint8_t time_out = 50;
 	uint8_t time_start = 0;
-	assert_param(hcan->Init.Prescaler);
-	assert_param(hcan->Init.SyncJumpWidth);
-	assert_param(hcan->Init.TimeSeg1);
-	assert_param(hcan->Init.TimeSeg2);
+//	assert_param(hcan->Init.Prescaler);
+//	assert_param(hcan->Init.SyncJumpWidth);
+//	assert_param(hcan->Init.TimeSeg1);
+//	assert_param(hcan->Init.TimeSeg2);
 	assert_param(hcan->Init.Mode);
 	assert_param(hcan->Init.status.AutoBusOff);
 	assert_param(hcan->Init.status.AutoRetransmission);
@@ -164,6 +164,29 @@ ErrorStatus LL_CAN_Init(LL_CAN_Handler_t *hcan)
 	// Clear bits of SJW | BRP | TS1 | TS2
 	(canbase->CAN_BTR) &= 0xF0000000;
 
+	switch(Calculate_APB1_clk())
+	{
+	case APB1_4MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					hcan->Init.Prescaler = 1;
+					hcan->Init.TimeSeg1 = _CAN_BS1_6TQ;
+					hcan->Init.TimeSeg2 = _CAN_BS2_1TQ;
+					break;
+	case APB1_8MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					hcan->Init.Prescaler = 1;
+					hcan->Init.TimeSeg1 = _CAN_BS1_13TQ;
+					hcan->Init.TimeSeg2 = _CAN_BS2_2TQ;
+					break;
+	case APB1_12MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					 hcan->Init.Prescaler = 2;
+					 hcan->Init.TimeSeg1 = _CAN_BS1_10TQ;
+					 hcan->Init.TimeSeg2 = _CAN_BS2_1TQ;
+					 break;
+	case APB1_24MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					 hcan->Init.Prescaler = 3;
+					 hcan->Init.TimeSeg1 = _CAN_BS1_13TQ;
+					 hcan->Init.TimeSeg2 = _CAN_BS2_2TQ;
+					 break;
+	}
 	// Can baudrate calculation bases on F_APB1=24Mhz, SJW | BRP | TS1 | TS2
 	(canbase->CAN_BTR) |= (((hcan->Init.SyncJumpWidth) << SJW) | (((hcan->Init.Prescaler) - 1) << BRP) | ((hcan->Init.TimeSeg1) << TS1) | ((hcan->Init.TimeSeg2) << TS2));
 
@@ -1231,5 +1254,18 @@ void LL_CAN_IRQHandler(LL_CAN_Handler_t *hcan)
 		hcan->ErrorCode |= errorcode;
 
 		LL_CAN_ErrorCallback(hcan);
+	}
+}
+
+uint32_t Calculate_APB1_clk()
+{
+	uint32_t PPRE1 = (RCC->CFGR >> 10) & 0x7;
+	switch(PPRE1)
+	{
+	case 0: return (SystemCoreClock/1);//SystemCoreClock=HCLK_freq
+	case 4: return (SystemCoreClock/2);
+	case 5: return (SystemCoreClock/4);
+	case 6: return (SystemCoreClock/8);
+	case 7: return (SystemCoreClock/16);
 	}
 }
