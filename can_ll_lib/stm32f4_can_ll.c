@@ -166,16 +166,16 @@ ErrorStatus LL_CAN_Init(LL_CAN_Handler_t *hcan)
 
 	switch(Calculate_APB1_clk())
 	{
-	case APB1_4MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
-					hcan->Init.Prescaler = 1;
-					hcan->Init.TimeSeg1 = _CAN_BS1_6TQ;
-					hcan->Init.TimeSeg2 = _CAN_BS2_1TQ;
-					break;
-	case APB1_8MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
-					hcan->Init.Prescaler = 1;
-					hcan->Init.TimeSeg1 = _CAN_BS1_13TQ;
-					hcan->Init.TimeSeg2 = _CAN_BS2_2TQ;
-					break;
+	case APB1_4MHZ:  hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					 hcan->Init.Prescaler = 1;
+					 hcan->Init.TimeSeg1 = _CAN_BS1_6TQ;
+					 hcan->Init.TimeSeg2 = _CAN_BS2_1TQ;
+					 break;
+	case APB1_8MHZ:  hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
+					 hcan->Init.Prescaler = 1;
+					 hcan->Init.TimeSeg1 = _CAN_BS1_13TQ;
+					 hcan->Init.TimeSeg2 = _CAN_BS2_2TQ;
+					 break;
 	case APB1_12MHZ: hcan->Init.SyncJumpWidth = _CAN_SJW_1TQ;
 					 hcan->Init.Prescaler = 2;
 					 hcan->Init.TimeSeg1 = _CAN_BS1_10TQ;
@@ -186,6 +186,7 @@ ErrorStatus LL_CAN_Init(LL_CAN_Handler_t *hcan)
 					 hcan->Init.TimeSeg1 = _CAN_BS1_13TQ;
 					 hcan->Init.TimeSeg2 = _CAN_BS2_2TQ;
 					 break;
+	default: while(1);//Error APB1 clock is not match with options above
 	}
 	// Can baudrate calculation bases on F_APB1=24Mhz, SJW | BRP | TS1 | TS2
 	(canbase->CAN_BTR) |= (((hcan->Init.SyncJumpWidth) << SJW) | (((hcan->Init.Prescaler) - 1) << BRP) | ((hcan->Init.TimeSeg1) << TS1) | ((hcan->Init.TimeSeg2) << TS2));
@@ -1268,4 +1269,5 @@ uint32_t Calculate_APB1_clk()
 	case 6: return (SystemCoreClock/8);
 	case 7: return (SystemCoreClock/16);
 	}
+
 }
