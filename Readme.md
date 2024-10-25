@@ -46,6 +46,9 @@ Example:
     LL_CAN_ActivateInterrupt(&hcan, _CAN_IT_RX_FIFO0_MSG_PENDING_Pos | _CAN_IT_TX_MAILBOX_EMPTY_Pos);
 ```
 
+> [!IMPORTANT]
+> Use activate interrupt function after config filter.
+
 ***4. Initialize CAN Parameters (Baudrate, Mode, Status)***
 
 ```
@@ -141,7 +144,7 @@ Example:
     }
 
     /**
-    * @brief This function handles CAN1 SCE interrupt.
+    * @brief This function handles CAN1 SCE interrupt. (Status Change Error)
     */
     void CAN1_SCE_IRQHandler(void)
     {

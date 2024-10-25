@@ -124,12 +124,10 @@ int main(void)
   NVIC_EnableIRQ(CAN1_RX0_IRQn);
   NVIC_EnableIRQ(CAN1_TX_IRQn);
 
-  // Enable interrupt
-  LL_CAN_ActivateInterrupt(&hcan1, _CAN_IT_RX_FIFO0_MSG_PENDING_Pos | _CAN_IT_TX_MAILBOX_EMPTY_Pos);
 
-  // Set flag to
+  // Setup CAN
   hcan1.Init.Mode = _NORMAL_MODE;
-  hcan1.Init.status.AutoBusOff = DISABLE;
+  hcan1.Init.status.AutoBusOff = ENABLE;
   hcan1.Init.status.AutoRetransmission = ENABLE;
   hcan1.Init.status.AutoWakeUp = DISABLE;
   hcan1.Init.status.ReceiveFifoLocked = DISABLE;
@@ -175,14 +173,16 @@ int main(void)
   }
 
   Txheader.StdId = 135;
-  Txheader._DLC = 6;
+  Txheader._DLC = 8;
   Txheader._RTR = _CAN_RTR_DATA;
   Txheader._IDE = _CAN_ID_STD;
   Txheader.TransmitGlobalTime = DISABLE;
 
+  Can_Tx();
+//  Can_Rx();
   /* USER CODE END 2 */
 
-  Can_Tx();
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -190,7 +190,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
 
 
 //    Anti_WDG();
@@ -339,13 +338,13 @@ void Can_Rx()
 }
 void Can_Tx()
 {
-  if (LL_CAN_AddTxMessage(&hcan1, data1, &Txheader, &TxMailBox) == ERROR)
+  if (LL_CAN_AddTxMessage(&hcan1, data, &Txheader, &TxMailBox) == SUCCESS)
   {
-    //          if (LL_CAN_IsTxMessagePending(&hcan1, &TxMailBox) == SUCCESS)
-    //          {
-    //            LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
-    //          }
-    sprintf(msg, "Transmit Fail\n");
+//              if (LL_CAN_IsTxMessagePending(&hcan1, &TxMailBox) == SUCCESS)
+//              {
+//                LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
+//              }
+    sprintf(msg, "Transmit Successfully\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
 }
@@ -379,17 +378,20 @@ void LL_CAN_RxFifo0MsgPendingCallback(LL_CAN_Handler_t *hcan)
 	    sprintf(msg, "Receive and Transmit Successfully\n");
 	    HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
 	  }
-    sprintf(msg, "string\n");
-//    HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+
     for (int i = 0; i < Rxheader._DLC; i++)
     {
     	HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
-//    	HAL_UART_Transmit(&huart2, (uint8_t *)rxdata, 8, 1000);
     }
     sprintf(msg, "Receive Successfully\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
     LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
   }
+}
+void LL_CAN_ErrorCallback(LL_CAN_Handler_t *hcan)
+{
+	sprintf(msg, "CAN error\n");
+	HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
 }
 /* USER CODE END 4 */
 

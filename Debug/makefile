@@ -53,6 +53,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 STM32F405_CAN_LL_.list \
 
+OBJCOPY_HEX += \
+STM32F405_CAN_LL_.hex \
+
 
 # All Target
 all: main-build
@@ -76,12 +79,17 @@ STM32F405_CAN_LL_.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEP
 	@echo 'Finished building: $@'
 	@echo ' '
 
+STM32F405_CAN_LL_.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "STM32F405_CAN_LL_.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) STM32F405_CAN_LL_.elf STM32F405_CAN_LL_.list STM32F405_CAN_LL_.map default.size.stdout
+	-$(RM) STM32F405_CAN_LL_.elf STM32F405_CAN_LL_.hex STM32F405_CAN_LL_.list STM32F405_CAN_LL_.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
