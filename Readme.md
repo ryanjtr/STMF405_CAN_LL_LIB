@@ -49,10 +49,6 @@ Example:
 ***4. Initialize CAN Parameters (Baudrate, Mode, Status)***
 
 ```
-    hcan.Init.Prescaler = 2;
-    hcan.Init.SyncJumpWidth = _CAN_SJW_1TQ;
-    hcan.Init.TimeSeg1 = _CAN_BS1_10TQ;
-    hcan.Init.TimeSeg2 = _CAN_BS2_1TQ;
     hcan.Init.Mode = _LOOPBACK_MODE;
     hcan.Init.status.AutoBusOff = DISABLE;
     hcan.Init.status.AutoRetransmission = ENABLE;
@@ -63,6 +59,10 @@ Example:
 
     LL_CAN_Init(&hcan);
 ```
+> [!NOTE]
+> Bit rate will be calculate based on APB1 frequency: 4MHz, 8MHz, 12MHz, 24MHz.
+
+
 ***5. Configure CAN Filter***
 
 ```
