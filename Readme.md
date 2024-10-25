@@ -60,7 +60,7 @@ Example:
     LL_CAN_Init(&hcan);
 ```
 > [!NOTE]
-> Bit rate will be calculate based on APB1 frequency: 4MHz, 8MHz, 12MHz, 24MHz.
+> Bit rate will be calculated based on APB1 frequency: 4MHz, 8MHz, 12MHz, 24MHz.
 
 
 ***5. Configure CAN Filter***
