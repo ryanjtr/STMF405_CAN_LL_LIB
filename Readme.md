@@ -103,13 +103,14 @@ Example:
 > [!NOTE]   
 > If using interrupt, call only the second function. 
 
-```
+
 ***2. Reception***
 
 ```
     LL_CAN_GetRxFifoFillLevel(LL_CAN_Handler_t *hcan, uint32_t RxFifo);
 
     LL_CAN_GetRxMessage(LL_CAN_Handler_t *hcan, LL_CAN_RxHeaderTypeDef_t *hrxheader, uint8_t rxdata[], uint32_t RxFifo);
+
 ```
 
 > [!NOTE]  
@@ -133,7 +134,7 @@ Example:
     {
     LL_CAN_IRQHandler(&hcan1);
     }
-    
+
     void CAN1_RX1_IRQHandler(void)
     {
     LL_CAN_IRQHandler(&hcan1);
