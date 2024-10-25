@@ -101,8 +101,9 @@ Example:
     LL_CAN_IsTxMessagePending(LL_CAN_Handler_t *hcan, uint32_t *TxMailBox);
 ```
 > [!NOTE]   
-> If using interrupt, call only the second function.
+> If using interrupt, call only the second function. 
 
+```
 ***2. Reception***
 
 ```
@@ -113,3 +114,37 @@ Example:
 
 > [!NOTE]  
 > If using interrupt, call only the second function.
+
+## CAN IRQ FUNCTION
+
+```
+    /**
+    * @brief This function handles CAN1 TX interrupts.
+    */
+    void CAN1_TX_IRQHandler(void)
+    {
+    LL_CAN_IRQHandler(&hcan1);
+    }
+
+    /**
+    * @brief This function handles CAN1 RX0 interrupts.
+    */
+    void CAN1_RX0_IRQHandler(void)
+    {
+    LL_CAN_IRQHandler(&hcan1);
+    }
+    
+    void CAN1_RX1_IRQHandler(void)
+    {
+    LL_CAN_IRQHandler(&hcan1);
+    }
+
+    /**
+    * @brief This function handles CAN1 SCE interrupt.
+    */
+    void CAN1_SCE_IRQHandler(void)
+    {
+    LL_CAN_IRQHandler(&hcan1);
+    }
+
+```
