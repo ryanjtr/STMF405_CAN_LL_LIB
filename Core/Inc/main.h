@@ -55,7 +55,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define IS_REC_BOARD 0
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

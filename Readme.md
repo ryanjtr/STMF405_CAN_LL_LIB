@@ -1,5 +1,11 @@
 # CAN LL Library for STM32F4
 
+## HARDWARE CHECK
+
+* Both boards share a common ground.
+
+* Check the connectors and pads of the CAN interface.
+
 ## Define CAN Handler, Filter, and Header
 
 ```

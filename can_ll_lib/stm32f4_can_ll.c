@@ -1269,5 +1269,5 @@ uint32_t Calculate_APB1_clk()
 	case 6: return (SystemCoreClock/8);
 	case 7: return (SystemCoreClock/16);
 	}
-
+	return SystemCoreClock/1;
 }

@@ -49,7 +49,7 @@ LL_CAN_Handler_t hcan1;
 LL_CAN_FilterTypeDef_t hfilter1;
 LL_CAN_TxHeaderTypeDef_t Txheader;
 LL_CAN_RxHeaderTypeDef_t Rxheader;
-uint8_t data[8] = {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80};
+uint8_t data[8] = {0x00, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80};
 uint8_t data1[8] = {11, 12, 13, 14, 15, 11, 12, 13};
 uint8_t rxdata[8];
 char msg[70];
@@ -62,9 +62,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void Anti_WDG();
+
 void Can_Rx();
 void Can_Tx();
+void uart_print(const char *str);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -103,18 +104,26 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+#if IS_REC_BOARD
+  sprintf(msg, "This is rev board\r\n");
+  HAL_UART_Transmit(&huart2, (uint8_t *)msg, 50, 1000);
+#else
+  sprintf(msg, "This is trans board\r\n");
+  HAL_UART_Transmit(&huart2, (uint8_t *)msg, 50, 1000);
+#endif
   hcan1.Instance = _CAN1;
 
   LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_5);
 
   if (LL_CAN_GPIO_Init(&hcan1) == ERROR)
   {
-    sprintf(msg, "GPIO initialization fail\n");
+
+    sprintf(msg, "GPIO initialization fail\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, 50, 1000);
   }
   else
   {
-    sprintf(msg, "GPIO initialization successfully\n");
+    sprintf(msg, "GPIO initialization successfully\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, 50, 1000);
   }
 
@@ -123,7 +132,6 @@ int main(void)
   NVIC_SetPriority(CAN1_RX0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
   NVIC_EnableIRQ(CAN1_RX0_IRQn);
   NVIC_EnableIRQ(CAN1_TX_IRQn);
-
 
   // Setup CAN
   hcan1.Init.Mode = _NORMAL_MODE;
@@ -136,12 +144,12 @@ int main(void)
 
   if (LL_CAN_Init(&hcan1) == ERROR)
   {
-    sprintf(msg, "Can initialization fail\n");
+    sprintf(msg, "Can initialization fail\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
   else
   {
-    sprintf(msg, "CAN initialization successfully\n");
+    sprintf(msg, "CAN initialization successfully\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
 
@@ -163,25 +171,22 @@ int main(void)
   // Start Can
   if (LL_CAN_Start(&hcan1) == ERROR)
   {
-    sprintf(msg, "Can start fail\n");
+    sprintf(msg, "Can start fail\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
   else
   {
-    sprintf(msg, "CAN start successfully\n");
+    sprintf(msg, "CAN start successfully\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
 
-  Txheader.StdId = 135;
+  Txheader.StdId = 0x12;
   Txheader._DLC = 8;
   Txheader._RTR = _CAN_RTR_DATA;
   Txheader._IDE = _CAN_ID_STD;
   Txheader.TransmitGlobalTime = DISABLE;
 
-  Can_Tx();
-//  Can_Rx();
   /* USER CODE END 2 */
-
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -190,9 +195,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-
-//    Anti_WDG();
+#if !IS_REC_BOARD
+    Can_Tx();
+    data[0]++;
+    if (data[0] > 0x07)
+    {
+      data[0] = 0x00;
+    }
+    LL_mDelay(5000);
+#endif
   }
   /* USER CODE END 3 */
 }
@@ -317,13 +328,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Anti_WDG()
-{
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 1);
-  HAL_Delay(200);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
-  HAL_Delay(1000);
-}
 
 void Can_Rx()
 {
@@ -331,8 +335,11 @@ void Can_Rx()
   {
     if (LL_CAN_GetRxMessage(&hcan1, &Rxheader, rxdata, _CAN_RX_FIFO0) == ERROR)
     {
-      sprintf(msg, "Receive Fail\n");
-      HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+      uart_print("Receive Fail\r\n");
+    }
+    else
+    {
+      uart_print("Receive OK\r\n");
     }
   }
 }
@@ -340,59 +347,60 @@ void Can_Tx()
 {
   if (LL_CAN_AddTxMessage(&hcan1, data, &Txheader, &TxMailBox) == SUCCESS)
   {
-//              if (LL_CAN_IsTxMessagePending(&hcan1, &TxMailBox) == SUCCESS)
-//              {
-//                LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
-//              }
-    sprintf(msg, "Transmit Successfully\n");
+    sprintf(msg, "AddTX OK\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
 }
 
 void LL_CAN_TxMailbox0CompleteCallback(LL_CAN_Handler_t *hcan)
 {
-  sprintf(msg, "Transmit Successfully M0\n");
+
+  sprintf(msg, "Trans M0\r\n");
   HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
 }
 void LL_CAN_TxMailbox1CompleteCallback(LL_CAN_Handler_t *hcan)
 {
-  sprintf(msg, "Transmit Successfully M1\n");
+  sprintf(msg, "Trans M1\r\n");
   HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
 }
 void LL_CAN_TxMailbox2CompleteCallback(LL_CAN_Handler_t *hcan)
 {
-  sprintf(msg, "Transmit Successfully M2\n");
+  sprintf(msg, "Trans M2\r\n");
   HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
 }
 void LL_CAN_RxFifo0MsgPendingCallback(LL_CAN_Handler_t *hcan)
 {
   if (LL_CAN_GetRxMessage(&hcan1, &Rxheader, rxdata, _CAN_RX_FIFO0) == ERROR)
   {
-    sprintf(msg, "Receive Fail\n");
+    sprintf(msg, "Receive Fail\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
   }
   else
   {
-	  if (LL_CAN_AddTxMessage(&hcan1, rxdata, &Txheader, &TxMailBox) == ERROR)
-	  {
-	    sprintf(msg, "Receive and Transmit Successfully\n");
-	    HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
-	  }
 
-    for (int i = 0; i < Rxheader._DLC; i++)
-    {
-    	HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
-    }
-    sprintf(msg, "Receive Successfully\n");
+    //    	  if (LL_CAN_AddTxMessage(&hcan1, rxdata, &Txheader, &TxMailBox) == ERROR)
+    //    	  {
+    //    	    sprintf(msg, "Receive and Transmit OK\r\n");
+    //    	    HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+    //    	  }
+    //
+    //        for (int i = 0; i < Rxheader._DLC; i++)
+    //        {
+    //        	HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+    //        }
+    sprintf(msg, "Receive OK\r\n");
     HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
     LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
   }
 }
+
 void LL_CAN_ErrorCallback(LL_CAN_Handler_t *hcan)
 {
-	sprintf(msg, "CAN error\n");
-	HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+  sprintf(msg, "CAN error\r\n");
+  HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), 1000);
+  LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_5);
 }
+
 /* USER CODE END 4 */
 
 /**
